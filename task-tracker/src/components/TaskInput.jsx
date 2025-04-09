@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addTaskAsync } from '../features/tasks/tasksSlice';
 import { v4 as uuidv4 } from 'uuid';
 
-
 const TaskInput = () => {
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState('--Select Priority--');
@@ -11,6 +10,7 @@ const TaskInput = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.tasks.loading);
 
+  // Refs are used to manage focus between fields for better keyboard navigation
   const titleRef = useRef();
   const categoryRef = useRef();
   const priorityRef = useRef();
@@ -20,6 +20,7 @@ const TaskInput = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
+    // Constructing a task object with a unique ID
     const newTask = {
       id: uuidv4(),
       title,
@@ -29,12 +30,15 @@ const TaskInput = () => {
     };
 
     dispatch(addTaskAsync(newTask));
+    
+    // Reset fields and focus back to title for fast task entry
     setTitle('');
     setPriority('--Select Category--');
     setCategory('');
     titleRef.current.focus();
   };
 
+  // Handles keyboard navigation between fields using Enter, ArrowDown, ArrowUp
   const handleKeyDown = (e, field) => {
     if (e.key === 'Enter' || e.key === 'ArrowDown') {
       e.preventDefault();
@@ -56,7 +60,7 @@ const TaskInput = () => {
         placeholder="Task title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={(e) => handleKeyDown(e, 'title')}
+        onKeyDown={(e) => handleKeyDown(e, 'title')} // Moves focus to next input on Enter/Arrow
         className="p-2 border rounded"
       />
       <input
@@ -84,11 +88,11 @@ const TaskInput = () => {
         ref={submitButtonRef}
         type="submit"
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        disabled={loading}
+        disabled={loading} // Disable button while async task is processing
       >
-        {loading ? 'Adding...' : 'Add Task'}
+        {loading ? 'Adding...' : 'Add Task'} // Dynamic label based on state
       </button>
-      {loading && <p>Adding task...</p>}
+      {loading && <p>Adding task...</p>} {/* Optional feedback indicator */}
     </form>
   );
 };
